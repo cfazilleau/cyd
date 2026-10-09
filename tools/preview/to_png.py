@@ -1,8 +1,10 @@
 """Convert the RGB565 dumps written by preview.exe into PNG files (stdlib only)."""
 import glob, os, struct, sys, zlib
 
-def to_png(src, dst, w=320, h=240, scale=2):
+def to_png(src, dst, scale=2):
     data = open(src, "rb").read()
+    w, h = struct.unpack_from("<HH", data)  # header written by preview.cpp
+    data = data[4:]
     rows = []
     for y in range(h):
         line = bytearray()

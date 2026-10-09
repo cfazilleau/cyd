@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Size: 44 px
  * Bpp: 4
- * Opts: --no-compress --no-prefilter --bpp 4 --size 44 --format lvgl --font C:/Users/clement.fazilleau/.projects/RERA_CYD/.pio/libdeps/cyd_st7789/lvgl/scripts/built_in_font/Montserrat-Medium.ttf -r 0x20,0x2D,0x30-0x3A,0x3C,0x68 --lv-font-name font_big_44 -o C:/Users/clement.fazilleau/.projects/RERA_CYD/src/fonts/font_big_44.c
+ * Opts: --no-compress --no-prefilter --bpp 4 --size 44 --format lvgl --font D:/Users/Coda/Projects/Perso/cyd/.pio/libdeps/cyd_st7789/lvgl/scripts/built_in_font/Montserrat-Medium.ttf -r 0x20,0x2D,0x30-0x3A,0x3C,0x68 --lv-font-name font_big_44 -o D:/Users/Coda/Projects/Perso/cyd/src/fonts/font_big_44.c
  ******************************************************************************/
 
 #ifdef LV_LVGL_H_INCLUDE_SIMPLE

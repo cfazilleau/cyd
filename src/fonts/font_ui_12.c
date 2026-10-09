@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Size: 12 px
  * Bpp: 4
- * Opts: --no-compress --no-prefilter --bpp 4 --size 12 --format lvgl --font C:/Users/clement.fazilleau/.projects/RERA_CYD/.pio/libdeps/cyd_st7789/lvgl/scripts/built_in_font/Montserrat-Medium.ttf -r 0x20-0x7E,0xA0-0xFF,0x152-0x153,0x2013-0x2014,0x2018-0x2019,0x201C-0x201D,0x2022,0x2026,0x2192,0x20AC --font C:/Users/clement.fazilleau/.projects/RERA_CYD/.pio/libdeps/cyd_st7789/lvgl/scripts/built_in_font/FontAwesome5-Solid+Brands+Regular.woff -r 0xF058,0xF071,0xF05A,0xF057,0xF1EB,0xF186,0xF017,0xF238 --lv-font-name font_ui_12 -o C:/Users/clement.fazilleau/.projects/RERA_CYD/src/fonts/font_ui_12.c
+ * Opts: --no-compress --no-prefilter --bpp 4 --size 12 --format lvgl --font D:/Users/Coda/Projects/Perso/cyd/.pio/libdeps/cyd_st7789/lvgl/scripts/built_in_font/Montserrat-Medium.ttf -r 0x20-0x7E,0xA0-0xFF,0x152-0x153,0x2013-0x2014,0x2018-0x2019,0x201C-0x201D,0x2022,0x2026,0x2192,0x20AC --font D:/Users/Coda/Projects/Perso/cyd/.pio/libdeps/cyd_st7789/lvgl/scripts/built_in_font/FontAwesome5-Solid+Brands+Regular.woff -r 0xF058,0xF071,0xF05A,0xF057,0xF1EB,0xF186,0xF017,0xF238,0xF554 --lv-font-name font_ui_12 -o D:/Users/Coda/Projects/Perso/cyd/src/fonts/font_ui_12.c
  ******************************************************************************/
 
 #ifdef LV_LVGL_H_INCLUDE_SIMPLE
@@ -1425,7 +1425,16 @@ static LV_ATTRIBUTE_LARGE_CONST const uint8_t glyph_bitmap[] = {
     0xf8, 0x5f, 0xff, 0xf4, 0xff, 0xff, 0x0, 0xbf,
     0xff, 0x4a, 0xff, 0xf4, 0x1e, 0xff, 0xd0, 0x6,
     0xbf, 0xff, 0xfd, 0x81, 0x0, 0xb, 0xff, 0xff,
-    0xe2, 0x0, 0x3, 0x77, 0x77, 0x77, 0x50, 0x0
+    0xe2, 0x0, 0x3, 0x77, 0x77, 0x77, 0x50, 0x0,
+
+    /* U+F554 "" */
+    0x0, 0x0, 0x42, 0x0, 0x0, 0x2, 0xfe, 0x0,
+    0x0, 0x0, 0xb9, 0x0, 0x0, 0x15, 0x40, 0x0,
+    0xa, 0xff, 0xfb, 0x0, 0x7f, 0xaf, 0xff, 0x50,
+    0x46, 0x5f, 0xed, 0xe3, 0x0, 0x5f, 0xb2, 0xa3,
+    0x0, 0x3b, 0xf4, 0x0, 0x3, 0xf3, 0xde, 0x0,
+    0x1d, 0xe0, 0x4f, 0x40, 0xdf, 0x30, 0xf, 0x70,
+    0x73, 0x0, 0x6, 0x30
 };
 
 
@@ -1645,7 +1654,8 @@ static const lv_font_fmt_txt_glyph_dsc_t glyph_dsc[] = {
     {.bitmap_index = 6783, .adv_w = 216, .box_w = 15, .box_h = 13, .ofs_x = -1, .ofs_y = -2},
     {.bitmap_index = 6881, .adv_w = 192, .box_w = 12, .box_h = 13, .ofs_x = 0, .ofs_y = -2},
     {.bitmap_index = 6959, .adv_w = 240, .box_w = 15, .box_h = 12, .ofs_x = 0, .ofs_y = -1},
-    {.bitmap_index = 7049, .adv_w = 168, .box_w = 11, .box_h = 13, .ofs_x = 0, .ofs_y = -2}
+    {.bitmap_index = 7049, .adv_w = 168, .box_w = 11, .box_h = 13, .ofs_x = 0, .ofs_y = -2},
+    {.bitmap_index = 7121, .adv_w = 120, .box_w = 8, .box_h = 13, .ofs_x = 0, .ofs_y = -2}
 };
 
 /*---------------------
@@ -1655,7 +1665,7 @@ static const lv_font_fmt_txt_glyph_dsc_t glyph_dsc[] = {
 static const uint16_t unicode_list_2[] = {
     0x0, 0x1, 0x1ec1, 0x1ec2, 0x1ec6, 0x1ec7, 0x1eca, 0x1ecb,
     0x1ed0, 0x1ed4, 0x1f5a, 0x2040, 0xeec5, 0xef05, 0xef06, 0xef08,
-    0xef1f, 0xf034, 0xf099, 0xf0e6
+    0xef1f, 0xf034, 0xf099, 0xf0e6, 0xf402
 };
 
 /*Collect the unicode lists and glyph_id offsets*/
@@ -1670,8 +1680,8 @@ static const lv_font_fmt_txt_cmap_t cmaps[] =
         .unicode_list = NULL, .glyph_id_ofs_list = NULL, .list_length = 0, .type = LV_FONT_FMT_TXT_CMAP_FORMAT0_TINY
     },
     {
-        .range_start = 338, .range_length = 61671, .glyph_id_start = 192,
-        .unicode_list = unicode_list_2, .glyph_id_ofs_list = NULL, .list_length = 20, .type = LV_FONT_FMT_TXT_CMAP_SPARSE_TINY
+        .range_start = 338, .range_length = 62467, .glyph_id_start = 192,
+        .unicode_list = unicode_list_2, .glyph_id_ofs_list = NULL, .list_length = 21, .type = LV_FONT_FMT_TXT_CMAP_SPARSE_TINY
     }
 };
 
@@ -1709,7 +1719,7 @@ static const uint8_t kern_left_class_mapping[] =
     46, 51, 51, 51, 51, 58, 46, 58,
     26, 49, 0, 0, 72, 73, 72, 73,
     9, 10, 25, 0, 0, 0, 0, 0,
-    0, 0, 0, 0
+    0, 0, 0, 0, 0
 };
 
 /*Map glyph_ids to kern right classes*/
@@ -1741,7 +1751,7 @@ static const uint8_t kern_right_class_mapping[] =
     39, 45, 45, 45, 45, 46, 38, 46,
     23, 39, 0, 0, 61, 62, 61, 62,
     9, 10, 51, 0, 0, 0, 0, 0,
-    0, 0, 0, 0
+    0, 0, 0, 0, 0
 };
 
 /*Kern values between classes*/
