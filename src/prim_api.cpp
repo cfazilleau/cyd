@@ -37,7 +37,7 @@ struct Request {
         tls.setHandshakeTimeout(15);
         http.useHTTP10(true);  // no chunked encoding -> we can stream-parse the body
         http.setConnectTimeout(10000);
-        http.setTimeout(15000);
+        http.setTimeout(HTTP_TIMEOUT_MS);
         http.setReuse(false);
         if (!http.begin(tls, url)) return HTTPC_ERROR_CONNECTION_REFUSED;
         http.addHeader("apikey", PRIM_API_KEY);
@@ -105,7 +105,8 @@ bool prim_fetch_departures(Departure *out, uint8_t *count, char *err, size_t err
 
     JsonDocument doc;
     DeserializationError jerr = deserializeJson(doc, req.http.getStream(),
-                                                DeserializationOption::Filter(filter));
+                                                DeserializationOption::Filter(filter),
+                                                DeserializationOption::NestingLimit(32));
     if (jerr) {
         snprintf(err, errLen, "R\xC3\xA9ponse illisible (%s)", jerr.c_str());
         return false;
@@ -202,7 +203,7 @@ void strip_line_prefix(char *s) {
 
 bool skip_ws_peek(Stream &s, char expected) {
     uint32_t start = millis();
-    while (millis() - start < 15000) {
+    while (millis() - start < HTTP_TIMEOUT_MS) {
         int c = s.peek();
         if (c < 0) { delay(5); continue; }
         if (c == ' ' || c == '\n' || c == '\r' || c == '\t') { s.read(); continue; }
@@ -251,7 +252,7 @@ bool prim_fetch_disruptions(Disruption *out, uint8_t *count, char *err, size_t e
     }
 
     Stream &stream = req->http.getStream();
-    stream.setTimeout(15000);
+    stream.setTimeout(HTTP_TIMEOUT_MS);
     if (!seek_disruptions_array(stream)) return true;  // no disruptions at all
 
     JsonDocument filter;

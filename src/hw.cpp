@@ -10,14 +10,13 @@
 
 // Pins that are not part of the TFT_eSPI setup (see platformio.ini for the panel)
 static constexpr int kTouchClk = 25, kTouchMosi = 32, kTouchMiso = 39, kTouchCs = 33, kTouchIrq = 36;
-static constexpr int kBacklightChannel = 0;
 
 static TFT_eSPI tft;
 static uint16_t xpt_cmd(uint8_t cmd);
 static uint8_t backlight = 0;
 
 // LVGL renders into this buffer in strips, then we push them over SPI.
-static constexpr int kScreenW = 320, kScreenH = 240;
+static constexpr int kScreenW = SCREEN_PORTRAIT ? 240 : 320, kScreenH = SCREEN_PORTRAIT ? 320 : 240;
 static constexpr int kBufLines = 24;
 static uint16_t *lvBuf = nullptr;
 static constexpr size_t kBufBytes = kScreenW * kBufLines * sizeof(uint16_t);
@@ -56,9 +55,8 @@ void display_init() {
     tft.setRotation(SCREEN_ROTATION);
     tft.fillScreen(TFT_BLACK);
 
-    ledcSetup(kBacklightChannel, 5000, 8);
-    ledcAttachPin(BACKLIGHT_PIN, kBacklightChannel);
-    ledcWrite(kBacklightChannel, 0);
+    ledcAttach(BACKLIGHT_PIN, 5000, 8);
+    ledcWrite(BACKLIGHT_PIN, 0);
     backlight = 0;
 
     lv_init();
@@ -74,7 +72,7 @@ void backlight_fade(uint8_t to, uint16_t ms) {
     int from = backlight;
     for (int i = 1; i <= steps; i++) {
         int v = from + (to - from) * i / steps;
-        ledcWrite(kBacklightChannel, v);
+        ledcWrite(BACKLIGHT_PIN, v);
         lv_timer_handler();
         delay(ms / steps);
     }
@@ -83,7 +81,7 @@ void backlight_fade(uint8_t to, uint16_t ms) {
 
 void display_power_down() {
     if (backlight) backlight_fade(0, 300);
-    ledcDetachPin(BACKLIGHT_PIN);
+    ledcDetach(BACKLIGHT_PIN);
     pinMode(BACKLIGHT_PIN, OUTPUT);
     digitalWrite(BACKLIGHT_PIN, LOW);
 
@@ -159,5 +157,5 @@ bool touch_irq_active() { return digitalRead(kTouchIrq) == LOW; }
 
 bool touch_pressed() {
     if (!touch_irq_active()) return false;  // cheap check first
-    return touch_pressure() > 400;
+    return touch_pressure() > TOUCH_PRESSURE_MIN;
 }

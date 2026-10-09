@@ -10,6 +10,7 @@
 //  * Touching the screen while asleep shows the board for PEEK_SECONDS.
 
 #include <Arduino.h>
+#include <atomic>
 #include <esp_sleep.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/semphr.h>
@@ -32,7 +33,7 @@ static bool displayOn = false;
 static BoardData shared;
 static BoardData view;
 static SemaphoreHandle_t dataMutex;
-static volatile uint32_t dataVersion = 0;
+static std::atomic<uint32_t> dataVersion{0};
 static TaskHandle_t netTaskHandle = nullptr;
 static volatile bool netStopRequested = false;
 static volatile bool netStopped = false;
@@ -110,7 +111,7 @@ static void net_task(void *) {
             xSemaphoreGive(dataMutex);
             Serial.printf("[departures] %s, %u trains%s%s\n", ok ? "ok" : "failed", n, ok ? "" : ": ",
                           ok ? "" : err);
-            nextDepartures = millis() + (ok ? DEPARTURES_REFRESH_S : 10) * 1000UL;
+            nextDepartures = millis() + (ok ? DEPARTURES_REFRESH_S : DEPARTURES_RETRY_S) * 1000UL;
         }
 
         if (netStopRequested) break;
@@ -130,7 +131,7 @@ static void net_task(void *) {
             xSemaphoreGive(dataMutex);
             Serial.printf("[disruptions] %s, %u messages%s%s\n", ok ? "ok" : "failed", n,
                           ok ? "" : ": ", ok ? "" : err);
-            nextDisruptions = millis() + (ok ? DISRUPTIONS_REFRESH_S : 30) * 1000UL;
+            nextDisruptions = millis() + (ok ? DISRUPTIONS_REFRESH_S : DISRUPTIONS_RETRY_S) * 1000UL;
         }
 
         vTaskDelay(pdMS_TO_TICKS(250));
@@ -141,7 +142,9 @@ static void net_task(void *) {
 
 static void start_net_task() {
     dataMutex = xSemaphoreCreateMutex();
-    xTaskCreatePinnedToCore(net_task, "net", 16384, nullptr, 1, &netTaskHandle, 0);
+    // Idle priority: a TLS handshake + JSON parse at 80 MHz can hog core 0 for
+    // >5 s; sharing time slices with IDLE0 keeps the task watchdog fed.
+    xTaskCreatePinnedToCore(net_task, "net", 16384, nullptr, tskIDLE_PRIORITY, &netTaskHandle, 0);
 }
 
 static void stop_net_task() {
@@ -178,9 +181,9 @@ static bool wait_until(Cond cond, uint32_t timeoutMs) {
         sleepS = 15 * 60;  // no idea what time it is: retry later
     } else {
         long delta = (long)(target - now);
-        // The RTC oscillator drifts a little: never sleep more than 2 h in one go
+        // The RTC oscillator drifts a little: never sleep more than MAX_SLEEP_S in one go
         // (each wake resyncs over NTP) and aim slightly early.
-        sleepS = delta > 2 * 3600 ? 2 * 3600 : max(30L, delta - delta / 50);
+        sleepS = delta > MAX_SLEEP_S ? MAX_SLEEP_S : max(30L, delta - delta / 50);
     }
 
     if (displayOn) {
@@ -258,7 +261,9 @@ void setup() {
         ui_splash("Wi-Fi introuvable\n\xC2\xAB " WIFI_SSID " \xC2\xBB", false);
         wait_until([] { return false; }, 5000);
         if (!clock_valid()) go_to_sleep();
-    } else if (!time_synced()) {
+    } else if (clock_valid()) {
+        time_begin_sync();  // RTC kept the time through deep sleep: resync in the background
+    } else {
         ui_splash("Mise \xC3\xA0 l'heure\xE2\x80\xA6", true);
         time_begin_sync();
         wait_until(time_synced, 10000);
@@ -274,9 +279,7 @@ void setup() {
         mode = MODE_ACTIVE;
     } else {
         mode = MODE_PEEK;
-        // Right after plugging in, stay on a bit longer so you can check it works.
-        uint32_t s = cause == ESP_SLEEP_WAKEUP_EXT0 ? PEEK_SECONDS : 2 * PEEK_SECONDS;
-        peekUntilMs = millis() + s * 1000UL;
+        peekUntilMs = millis() + PEEK_SECONDS * 1000UL;
     }
     Serial.printf("Mode: %s\n", mode == MODE_ACTIVE ? "active" : "peek");
 

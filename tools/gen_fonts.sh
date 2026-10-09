@@ -17,8 +17,8 @@ ICONS="$FONTS/FontAwesome5-Solid+Brands+Regular.woff"
 
 # ASCII, Latin-1 (é è à ç ...), Œ œ, dashes, quotes, bullet, ellipsis, arrow, euro
 TEXT_RANGE="0x20-0x7E,0xA0-0xFF,0x152-0x153,0x2013-0x2014,0x2018-0x2019,0x201C-0x201D,0x2022,0x2026,0x2192,0x20AC"
-# check-circle, warning, info-circle, times-circle, wifi, moon, clock, train
-ICON_RANGE="0xF058,0xF071,0xF05A,0xF057,0xF1EB,0xF186,0xF017,0xF238"
+# check-circle, warning, info-circle, times-circle, wifi, moon, clock, train, walking
+ICON_RANGE="0xF058,0xF071,0xF05A,0xF057,0xF1EB,0xF186,0xF017,0xF238,0xF554"
 
 for size in 12 14 16 20; do
   "$CONV" --no-compress --no-prefilter --bpp 4 --size "$size" --format lvgl \
